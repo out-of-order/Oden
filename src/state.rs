@@ -20,9 +20,22 @@ impl AppState {
     }
 }
 
+#[derive(Clone, Copy)]
 pub enum AppMode {
     Search,
     List,
     Graph,
     Settings,
+}
+
+impl std::fmt::Display for AppMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            AppMode::Search => "Search",
+            AppMode::List => "List",
+            AppMode::Graph => "Graph",
+            AppMode::Settings => "Settings",
+        };
+        write!(f, "{}", s)
+    }
 }
