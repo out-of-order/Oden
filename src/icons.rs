@@ -1,6 +1,7 @@
+#![allow(dead_code)]
+
 use gpui_component::IconNamed;
 
-#[allow(dead_code)]
 pub enum IconName {
     Settings,
     Search,

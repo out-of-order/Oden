@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use gpui::{Entity, ParentElement, Render, Styled, div, px};
 use gpui_component::{
     ActiveTheme, Icon,
@@ -6,7 +8,6 @@ use gpui_component::{
 
 use crate::{icons::IconName, state::AppState};
 
-#[allow(dead_code)]
 pub struct AppRoot {
     pub app_state: Entity<AppState>,
 }
