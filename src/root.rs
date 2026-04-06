@@ -2,6 +2,7 @@ use gpui::{Entity, ParentElement, Render, Styled, div};
 
 use crate::state::AppState;
 
+#[allow(dead_code)]
 pub struct AppRoot {
     pub app_state: Entity<AppState>,
 }
