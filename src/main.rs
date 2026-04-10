@@ -31,6 +31,7 @@ impl AssetSource for Assets {
 
 use crate::{root::AppRoot, state::AppState, store::ItemStore};
 
+mod actions;
 mod icons;
 mod models;
 mod root;
@@ -46,7 +47,7 @@ fn main() {
         cx.spawn(async move |cx| {
             cx.open_window(WindowOptions::default(), |window, cx| {
                 let app_state: Entity<AppState> = cx.new(|_| AppState::init());
-                let view = cx.new(|_| AppRoot::new(app_state));
+                let view = cx.new(|cx| AppRoot::new(app_state, cx));
                 cx.new(|cx| Root::new(view, window, cx))
             })
             .unwrap();

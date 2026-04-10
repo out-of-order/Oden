@@ -1,41 +1,51 @@
 #![allow(dead_code)]
 
-use gpui::{Entity, IntoElement, ParentElement, Render, Styled, div, px};
+use gpui::{
+    Context, Entity, FocusHandle, InteractiveElement, IntoElement, ParentElement, Render, Styled,
+    Subscription, div, px,
+};
 use gpui_component::{
     ActiveTheme, Icon,
     button::{Button, ButtonVariants},
 };
 
 use crate::{
+    actions::{self, GraphMode, ListMode, SearchMode, Settings},
     icons::IconName,
     state::{AppMode, AppState},
 };
 
 pub struct AppRoot {
     pub app_state: Entity<AppState>,
+    pub focus: FocusHandle,
+    pub _state_sub: Subscription,
 }
 
 impl AppRoot {
-    pub fn new(app_state: Entity<AppState>) -> Self {
-        Self { app_state }
+    pub fn new(app_state: Entity<AppState>, cx: &mut Context<Self>) -> Self {
+        Self {
+            _state_sub: cx.observe(&app_state, |_, _, cx| {
+                cx.notify();
+            }),
+            app_state,
+            focus: cx.focus_handle(),
+        }
     }
 
-    fn nav_button(
-        &self,
-        cx: &mut gpui::Context<Self>,
-        icon: IconName,
-        mode: AppMode,
-        tooltip: &'static str,
-    ) -> Button {
+    fn nav_button(&self, icon: IconName, mode: AppMode, tooltip: &'static str) -> Button {
+        let focus = self.focus.clone();
         Button::new(tooltip)
             .icon(Icon::new(icon))
             .ghost()
-            .on_click(cx.listener(move |this, _event, _window, cx| {
-                this.app_state.update(cx, |state, cx| {
-                    state.mode = mode;
-                    cx.notify();
-                });
-            }))
+            .on_click(move |_event, window, cx| {
+                focus.focus(window);
+                match mode {
+                    AppMode::List => window.dispatch_action(Box::new(actions::ListMode), cx),
+                    AppMode::Search => window.dispatch_action(Box::new(actions::SearchMode), cx),
+                    AppMode::Settings => window.dispatch_action(Box::new(actions::Settings), cx),
+                    AppMode::Graph => window.dispatch_action(Box::new(actions::GraphMode), cx),
+                }
+            })
             .tooltip(tooltip)
     }
 
@@ -44,10 +54,12 @@ impl AppRoot {
         let sidebar_bg = cx.theme().sidebar;
 
         let icon_rail = vec![
-            self.nav_button(cx, IconName::List, AppMode::List, "List Mode"),
-            self.nav_button(cx, IconName::Search, AppMode::Search, "Search Mode"),
-            self.nav_button(cx, IconName::Graph, AppMode::Graph, "Graph Mode"),
+            self.nav_button(IconName::List, AppMode::List, "List Mode"),
+            self.nav_button(IconName::Search, AppMode::Search, "Search Mode"),
+            self.nav_button(IconName::Graph, AppMode::Graph, "Graph Mode"),
         ];
+
+        let focus = self.focus.clone();
 
         div()
             .relative()
@@ -80,9 +92,22 @@ impl AppRoot {
                         Button::new("settings")
                             .ghost()
                             .tooltip("Settings")
-                            .icon(Icon::new(IconName::Settings)),
+                            .icon(Icon::new(IconName::Settings))
+                            .on_click(move |_event, window, cx| {
+                                focus.focus(window);
+                                window.dispatch_action(Box::new(actions::Settings), cx)
+                            }),
                     ),
             )
+    }
+
+    fn update_mode(&mut self, mode: AppMode, cx: &mut Context<Self>) {
+        self.app_state.update(cx, |app_state, cx| {
+            if app_state.mode != mode {
+                app_state.mode = mode;
+                cx.notify();
+            }
+        })
     }
 }
 
@@ -95,8 +120,20 @@ impl Render for AppRoot {
         let bg = cx.theme().background;
         let sidebar = self.render_sidebar(cx);
         let mode = self.app_state.read(cx).mode.to_string();
-
         div()
+            .track_focus(&self.focus)
+            .on_action(cx.listener(|this, _action: &ListMode, _window, cx| {
+                this.update_mode(AppMode::List, cx)
+            }))
+            .on_action(cx.listener(|this, _action: &SearchMode, _window, cx| {
+                this.update_mode(AppMode::Search, cx)
+            }))
+            .on_action(cx.listener(|this, _action: &GraphMode, _window, cx| {
+                this.update_mode(AppMode::Graph, cx)
+            }))
+            .on_action(cx.listener(|this, _action: &Settings, _window, cx| {
+                this.update_mode(AppMode::Settings, cx)
+            }))
             .flex()
             .flex_row()
             .h_full()
