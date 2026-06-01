@@ -5,8 +5,9 @@ use gpui::{
     ParentElement, Render, SharedString, Styled, Subscription, div, px,
 };
 use gpui_component::{
-    ActiveTheme, Icon,
+    ActiveTheme, Icon, TitleBar,
     button::{Button, ButtonVariants},
+    label::Label,
 };
 
 use crate::{
@@ -22,6 +23,8 @@ pub struct AppRoot {
     pub focus: FocusHandle,
     pub _state_sub: Subscription,
 }
+
+const APP_VERSION: &str = concat!("v", env!("CARGO_PKG_VERSION"));
 
 impl AppRoot {
     pub fn new(
@@ -125,6 +128,7 @@ impl Render for AppRoot {
         cx: &mut gpui::Context<Self>,
     ) -> impl gpui::IntoElement {
         let bg = cx.theme().background;
+        let muted = cx.theme().muted_foreground;
         let sidebar = self.render_sidebar(cx);
         let mode = self.app_state.read(cx).mode;
         div()
@@ -142,12 +146,25 @@ impl Render for AppRoot {
                 this.update_mode(AppMode::Settings, cx)
             }))
             .flex()
-            .flex_row()
+            .flex_col()
             .h_full()
             .w_full()
             .bg(bg)
-            .child(sidebar)
-            .child(self.render_mode(mode))
+            .child(
+                TitleBar::new()
+                    .child("Oden")
+                    .child(Label::new(APP_VERSION).text_color(muted)),
+            )
+            .child(
+                div()
+                    .flex()
+                    .flex_row()
+                    .h_full()
+                    .w_full()
+                    .bg(bg)
+                    .child(sidebar)
+                    .child(self.render_mode(mode)),
+            )
     }
 }
 
