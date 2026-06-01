@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/out-of-order/Oden/compare/v0.1.1...v0.2.0) (2026-06-01)
+
+
+### Features
+
+* add titlebar ([3571869](https://github.com/out-of-order/Oden/commit/3571869d56d49712e181ae58d838c5b443569040))
+* add titlebar ([5e21dee](https://github.com/out-of-order/Oden/commit/5e21dee93d353719fb70af44e5c983510b667efa))
+
 ## [0.1.1](https://github.com/Ovrflwd-Org/Oden/compare/v0.1.0...v0.1.1) (2026-05-30)
 
 
