@@ -7,6 +7,9 @@ pub enum IconName {
     Search,
     Graph,
     List,
+    Minimize,
+    Restore,
+    Close,
 }
 
 impl IconNamed for IconName {
@@ -16,6 +19,9 @@ impl IconNamed for IconName {
             IconName::Search => "icons/search.svg",
             IconName::Graph => "icons/graph.svg",
             IconName::List => "icons/list.svg",
+            IconName::Minimize => "icons/window-minimize.svg",
+            IconName::Restore => "icons/window-restore.svg",
+            IconName::Close => "icons/window-close.svg",
         }
         .into()
     }

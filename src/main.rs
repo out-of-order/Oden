@@ -4,7 +4,7 @@ use anyhow::anyhow;
 use gpui::{
     App, AppContext, Application, AssetSource, Entity, Result, SharedString, WindowOptions,
 };
-use gpui_component::{Root, Theme, ThemeRegistry};
+use gpui_component::{Root, Theme, ThemeRegistry, TitleBar};
 use rust_embed::RustEmbed;
 
 #[derive(RustEmbed)]
@@ -46,8 +46,12 @@ fn main() {
         gpui_component::init(cx);
         ItemStore::init(cx);
         setup_theme(cx);
+        let window_options = WindowOptions {
+            titlebar: Some(TitleBar::title_bar_options()),
+            ..Default::default()
+        };
         cx.spawn(async move |cx| {
-            cx.open_window(WindowOptions::default(), |window, cx| {
+            cx.open_window(window_options, |window, cx| {
                 let app_state: Entity<AppState> = cx.new(|_| AppState::init());
                 let view = cx.new(|cx| AppRoot::new(app_state, window, cx));
                 cx.new(|cx| Root::new(view, window, cx))
