@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/out-of-order/Oden/compare/v0.2.0...v0.3.0) (2026-06-09)
+
+
+### Features
+
+* add editor component and list item navigation ([226c0ae](https://github.com/out-of-order/Oden/commit/226c0ae12d9932b2585c63cb75e1e7ab13595ce4))
+* add simple editor component ([e77ebd3](https://github.com/out-of-order/Oden/commit/e77ebd3c03139d731349d6b9e2ad823949579446))
+
 ## [0.2.0](https://github.com/out-of-order/Oden/compare/v0.1.1...v0.2.0) (2026-06-01)
 
 
